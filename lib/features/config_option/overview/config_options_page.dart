@@ -150,10 +150,17 @@ class ConfigOptionsPage extends HookConsumerWidget {
                     onChanged: (val) => ref.watch(ConfigOptions.directDnsAddress.notifier).reset(),
                   ),
                   SwitchListTile(
-                    title: Text(experimental(t.config.blockAds)),
+                    title: Text("${t.config.blockAds} (RU region)"),
                     value: ref.watch(ConfigOptions.blockAds),
                     onChanged: ref.watch(ConfigOptions.blockAds.notifier).update,
                   ),
+                  if (ref.watch(ConfigOptions.blockAds)) ...[
+                    SwitchListTile(
+                      title: const Text('Блокировать основной домен Яндекса'),
+                      value: ref.watch(ConfigOptions.blockAdsYandex),
+                      onChanged: ref.watch(ConfigOptions.blockAdsYandex.notifier).update,
+                    ),
+                  ],
                   SwitchListTile(
                     title: Text(experimental(t.config.bypassLan)),
                     value: ref.watch(ConfigOptions.bypassLan),
@@ -202,6 +209,25 @@ class ConfigOptionsPage extends HookConsumerWidget {
                     value: ref.watch(ConfigOptions.enableDnsRouting),
                     onChanged: ref.watch(ConfigOptions.enableDnsRouting.notifier).update,
                   ),
+                  if (ref.watch(ConfigOptions.enableDnsRouting)) ...[
+                    SwitchListTile(
+                      title: const Text("Включить DNS проксирование определенных доменов"),
+                      value: ref.watch(ConfigOptions.enableDnsProxy),
+                      onChanged: ref.watch(ConfigOptions.enableDnsProxy.notifier).update,
+                    ),
+                    if (ref.watch(ConfigOptions.enableDnsProxy)) ...[
+                      ValuePreferenceWidget(
+                        title: "Адрес удаленного DNS прокси",
+                        value: ref.watch(ConfigOptions.remoteDnsAddressProxy),
+                        preferences: ref.watch(ConfigOptions.remoteDnsAddressProxy.notifier),
+                      ),
+                      ListPreferenceWidget(
+                        title: "Проксированные домены",
+                        list: ref.watch(ConfigOptions.proxiedDomains),
+                        preferences: ref.watch(ConfigOptions.proxiedDomains.notifier),
+                      ),
+                    ],
+                  ],
                   // const SettingsDivider(),
                   // SettingsSection(experimental(t.config.section.mux)),
                   // SwitchListTile(

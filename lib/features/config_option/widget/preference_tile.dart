@@ -52,6 +52,46 @@ class ValuePreferenceWidget<T> extends StatelessWidget {
   }
 }
 
+class ListPreferenceWidget<T> extends StatelessWidget {
+  const ListPreferenceWidget({
+    super.key,
+    required this.list,
+    required this.preferences,
+    this.enabled = true,
+    required this.title,
+    this.digitsOnly = false,
+  });
+
+  final List<String> list;
+  final PreferencesNotifier<T, dynamic> preferences;
+  final bool enabled;
+  final String title;
+
+  final bool digitsOnly;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      subtitle: Text('Selected ${list.length} domains'),
+      enabled: enabled,
+      onTap: () async {
+        final inputValue = await SettingsInputListDialog(
+          title: title,
+          initialValue: list,
+          onReset: preferences.reset,
+          digitsOnly: digitsOnly,
+        ).show(context);
+
+        if (inputValue == null) {
+          return;
+        }
+        await preferences.update(inputValue as T);
+      },
+    );
+  }
+}
+
 class ChoicePreferenceWidget<T> extends StatelessWidget {
   const ChoicePreferenceWidget({
     super.key,

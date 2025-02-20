@@ -2,13 +2,10 @@ import 'package:dartx/dartx.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:hiddify/core/model/optional_range.dart';
 import 'package:hiddify/core/model/region.dart';
-import 'package:hiddify/core/preferences/general_preferences.dart';
-
 import 'package:hiddify/core/utils/exception_handler.dart';
 import 'package:hiddify/core/utils/json_converters.dart';
 import 'package:hiddify/core/utils/preferences_utils.dart';
 import 'package:hiddify/features/config_option/model/config_option_failure.dart';
-
 import 'package:hiddify/features/log/model/log_level.dart';
 import 'package:hiddify/singbox/model/singbox_config_enum.dart';
 import 'package:hiddify/singbox/model/singbox_config_option.dart';
@@ -39,6 +36,67 @@ abstract class ConfigOptions {
     "block-ads",
     false,
   );
+
+  static final blockAdsYandex = PreferencesNotifier.create<bool, bool>(
+    "block-ads-yandex",
+    false,
+  );
+
+  static final enableDnsProxy = PreferencesNotifier.create<bool, bool>(
+    "enable-dns-proxy",
+    false,
+  );
+
+  static final remoteDnsAddressProxy = PreferencesNotifier.create<String, String>(
+    "remote-dns-address-proxy",
+    "https://dns.comss.one/dns-query",
+    possibleValues: List.of([
+      "https://xbox-dns.ru/dns-query",
+    ]),
+    validator: (value) => value.isNotBlank,
+  );
+
+  static final proxiedDomains = PreferencesNotifier.create<List<String>, List<String>>(
+    "proxied-dns-domains",
+    List.of([
+      "aistudio.google.com",
+      "aitestkitchen.withgoogle.com",
+      "alkalimakersuite-pa.clients6.google.com",
+      "assistant-s3-pa.googleapis.com",
+      "assistantfrontend-pa.googleapis.com",
+      "firebaseinstallations.googleapis.com",
+      "aisandbox-pa.googleapis.com",
+      "gemini.google.com",
+      "geller-pa.googleapis.com",
+      "labs.google",
+      "generativelanguage.googleapis.com",
+      "lamssettings-pa.googleapis.com",
+      "notebooklm.google",
+      "notebooklm.google.com",
+      "notifications-pa.googleapis.com",
+      "o.pki.goog",
+      "proactivebackend-pa.googleapis.com",
+      "searchnotifications-pa.googleapis.com",
+      "speechs3proto2-pa.googleapis.com",
+      "taskassist-pa.googleapis.com",
+      "update.googleapis.com",
+      "www.googleapis.com",
+      "android.googleapis.com",
+    ]),
+    // possibleValues: List.of([
+    //   "local",
+    //   "udp://223.5.5.5",
+    //   "udp://1.1.1.1",
+    //   "udp://1.1.1.2",
+    //   "tcp://1.1.1.1",
+    //   "https://1.1.1.1/dns-query",
+    //   "https://sky.rethinkdns.com/dns-query",
+    //   "4.4.2.2",
+    //   "8.8.8.8",
+    // ]),
+    validator: (value) => value.isNotEmpty,
+  );
+
   static final logLevel = PreferencesNotifier.create<LogLevel, String>(
     "log-level",
     LogLevel.warn,
@@ -364,6 +422,10 @@ abstract class ConfigOptions {
   static final Map<String, StateNotifierProvider<PreferencesNotifier, dynamic>> preferences = {
     "region": region,
     "block-ads": blockAds,
+    "block-ads-yandex": blockAdsYandex,
+    "enable-dns-proxy": enableDnsProxy,
+    "remote-dns-address-proxy": remoteDnsAddressProxy,
+    "proxied-dns-domains": proxiedDomains,
     "use-xray-core-when-possible": useXrayCoreWhenPossible,
     "service-mode": serviceMode,
     "log-level": logLevel,
@@ -468,6 +530,10 @@ abstract class ConfigOptions {
       return SingboxConfigOption(
         region: ref.watch(region).name,
         blockAds: ref.watch(blockAds),
+        blockAdsYandex: ref.watch(blockAdsYandex),
+        enableDnsProxy: ref.watch(enableDnsProxy),
+        remoteDnsAddressProxy: ref.watch(remoteDnsAddressProxy),
+        proxiedDomains: ref.watch(proxiedDomains),
         useXrayCoreWhenPossible: ref.watch(useXrayCoreWhenPossible),
         executeConfigAsIs: false,
         logLevel: ref.watch(logLevel),

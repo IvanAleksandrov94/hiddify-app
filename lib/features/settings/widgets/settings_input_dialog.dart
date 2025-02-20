@@ -155,6 +155,87 @@ class SettingsInputDialog<T> extends HookConsumerWidget with PresLogger {
   }
 }
 
+class SettingsInputListDialog<T> extends HookConsumerWidget with PresLogger {
+  const SettingsInputListDialog({super.key, required this.title, required this.initialValue, this.onReset, this.optionalAction, this.icon, this.digitsOnly = false});
+
+  final String title;
+  final List<String> initialValue;
+
+  final VoidCallback? onReset;
+  final (String text, VoidCallback)? optionalAction;
+  final IconData? icon;
+  final bool digitsOnly;
+
+  Future<T?> show(BuildContext context) async {
+    return showDialog(
+      context: context,
+      useRootNavigator: true,
+      builder: (context) => this,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = ref.watch(translationsProvider);
+    final localizations = MaterialLocalizations.of(context);
+
+    final textController = useTextEditingController(
+      text: initialValue.join("\n"),
+    );
+
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: AlertDialog(
+        title: Text(title),
+        icon: icon != null ? Icon(icon) : null,
+        content: FocusTraversalOrder(
+          order: const NumericFocusOrder(1),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: textController,
+                  // focusNode: focusNode,
+                  textDirection: TextDirection.ltr,
+                  autofocus: true,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 10,
+                  // decoration: InputDecoration(
+                  //     // border: OutlineInputBorder(),
+                  //     // labelText: 'City',
+                  //     )
+                )
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          FocusTraversalOrder(
+            order: const NumericFocusOrder(3),
+            child: TextButton(
+              onPressed: () async {
+                await Navigator.of(context).maybePop();
+              },
+              child: Text(localizations.cancelButtonLabel.toUpperCase()),
+            ),
+          ),
+          FocusTraversalOrder(
+            order: const NumericFocusOrder(2),
+            child: TextButton(
+              onPressed: () async {
+                final cleanedList = textController.text.split("\n").map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+                await Navigator.of(context).maybePop(cleanedList);
+              },
+              child: Text(localizations.okButtonLabel.toUpperCase()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class AutocompleteField extends StatelessWidget {
   const AutocompleteField({super.key, required this.initialValue, required this.options});
   final List<String> options;

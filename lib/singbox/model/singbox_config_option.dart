@@ -18,6 +18,10 @@ class SingboxConfigOption with _$SingboxConfigOption {
   const factory SingboxConfigOption({
     required String region,
     required bool blockAds,
+    @JsonKey(name: 'block-ads-yandex') required bool blockAdsYandex,
+    @JsonKey(name: 'enable-dns-proxy') required bool enableDnsProxy,
+    @JsonKey(name: 'remote-dns-address-proxy') required String remoteDnsAddressProxy,
+    @JsonKey(name: 'proxied-dns-domains') required List<String> proxiedDomains,
     required bool useXrayCoreWhenPossible,
     required bool executeConfigAsIs,
     required LogLevel logLevel,
